@@ -1,0 +1,6 @@
+/dataset/TinyStoriesV2-GPT4-train.txt
+/dataset/TinyStoriesV2-GPT4-valid.txt
+__pycache__/
+runs/
+ckpt/
+*.ipynb_checkpoints/

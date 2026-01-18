@@ -55,7 +55,7 @@ def sft_train(data_path, block_size, batch_size, vocab_size,
     train_loader, vocab_size = create_dataloader(data_path, block_size, batch_size,sft=True)
     
     model = decoder_transformer(vocab_size, d_model, n_layer, n_head, d_hidden).to(device)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(ignore_index=-100)
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
     cos_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs)
 

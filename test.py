@@ -22,7 +22,6 @@ def test_full_training(model, start_string, max_len, device, block_size,tokenize
             x = torch.cat((x, idx_next), dim=1)
     generated_ids = x[0].tolist()
     generated_text = tokenizer.decode(generated_ids)
-    # 过滤掉<|endoftext|>
     generated_text = generated_text.split("<|endoftext|>")[0]
     print(generated_text)
 

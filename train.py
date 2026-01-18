@@ -99,13 +99,6 @@ if __name__ == '__main__':
                                     learning_rate, num_epochs, device,t_writer)
         
         writer.close()
-        
-        # # --- test ---
-        # generate_story(trained_model, 
-        #                start_string="Once upon a time", 
-        #                max_len=100, 
-        #                device=device,
-        #                block_size=block_size)
     else:
         print(f"error: data file not found {data_path}")
         print("please ensure the file 'dataset/TinyStoriesV2-GPT4-train.txt' exists.")

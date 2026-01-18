@@ -4,3 +4,4 @@ __pycache__/
 runs/
 ckpt/
 *.ipynb_checkpoints/
+sft_data/

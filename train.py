@@ -62,7 +62,7 @@ def sft_train(data_path, block_size, batch_size, vocab_size,
     model.train()
     for epoch in range(num_epochs):
         total_loss = 0
-        writer = SummaryWriter(f'runs/sft_{epoch}_loss')
+        # writer = SummaryWriter(f'runs/sft_{epoch}_loss')
         pbar = tqdm(train_loader, desc=f"Epoch [{epoch+1}/{num_epochs}]")
         for batch_idx, (inputs, targets) in enumerate(pbar):
             inputs, targets = inputs.to(device), targets.to(device)
@@ -74,14 +74,15 @@ def sft_train(data_path, block_size, batch_size, vocab_size,
             optimizer.step()
             
             total_loss += loss.item()
-            writer.add_scalar('Loss/train', loss.item(), batch_idx)
+            # writer.add_scalar('Loss/train', loss.item(), batch_idx)
             pbar.set_postfix({'loss': f'{loss.item():.4f}','total_loss': f'{total_loss:.4f}'})
-        torch.save(model.state_dict(), f'ckpt/sft_epoch_{epoch+1}.pth')
+        if epoch % 10 == 0:
+            torch.save(model.state_dict(), f'ckpt/sft/sft_epoch_{epoch+1}.pth')
         cos_scheduler.step()
         avg_loss = total_loss / len(train_loader)
         t_writer.add_scalar('Loss/train', avg_loss, epoch)
         print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
-        writer.close()
+        # writer.close()
 
 if __name__ == '__main__':
     # --- h-paraments setting ---
@@ -97,8 +98,8 @@ if __name__ == '__main__':
     n_head = 8
     d_hidden = d_model * 2
     
-    learning_rate = 1e-4
-    num_epochs = 10
+    learning_rate = 2e-5
+    num_epochs = 100
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # 添加参数
@@ -117,10 +118,10 @@ if __name__ == '__main__':
             t_writer.close()
     
     elif args.sft:
-        data_path = os.path.join(current_dir, 'sft_data/sft_2000')
+        data_path = os.path.join(current_dir, 'sft_data/sft_2000.json')
         if os.path.exists(data_path):
             print("strat training...")
-            t_writer = SummaryWriter(f'runs/sft_total_loss')
+            t_writer = SummaryWriter(f'runs/sft/sft_total_loss')
             sft_train(data_path, block_size, batch_size, vocab_size,
                                         d_model, n_layer, n_head, d_hidden,
                                         learning_rate, num_epochs, device,t_writer)

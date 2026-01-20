@@ -52,7 +52,7 @@ class sft_dataset(Dataset):
         input_ = item.get('input', '')
         output = item.get('output', '')
 
-        if input_ is not None:
+        if input_:
             text = "指令:" + instruction + "\n输入:" + input_ + "\n输出:"
         else:
             text = "指令:" + instruction + "\n输出:"
@@ -70,7 +70,7 @@ class sft_dataset(Dataset):
             start =  random.randint(0, len(full_tokens) - self.max_len - 1)
             full_tokens = full_tokens[start : start + self.max_len+1]
             labels = labels[start : start + self.max_len+1]
-        print(len(full_tokens), len(labels))
+            
         x = torch.tensor(full_tokens[:-1], dtype=torch.long)
         y = torch.tensor(labels[1:], dtype=torch.long)
 

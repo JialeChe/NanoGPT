@@ -70,14 +70,14 @@ class sft_dataset(Dataset):
             # start =  random.randint(0, len(full_tokens) - self.max_len - 1)
             # full_tokens = full_tokens[start : start + self.max_len+1]
             # labels = labels[start : start + self.max_len+1]
-            if prompt_len >= self.max_len + 1:
+            if len(prompt_tokens) >= self.max_len + 1:
                 full_tokens = prompt_tokens[:self.max_len + 1]
                 labels = [self.pad_id] * (self.max_len + 1)
             else:
-                output_len_to_keep = self.max_len + 1 - prompt_len
-                output_tokens = full_tokens[prompt_len : prompt_len + output_len_to_keep]
+                output_len_to_keep = self.max_len + 1 - len(prompt_tokens)
+                output_tokens = full_tokens[len(prompt_tokens) : len(prompt_tokens) + output_len_to_keep]
                 full_tokens = prompt_tokens + output_tokens
-                labels = [self.pad_id] * prompt_len + output_tokens
+                labels = [self.pad_id] * len(prompt_len) + output_tokens
             
         x = torch.tensor(full_tokens[:-1], dtype=torch.long)
         y = torch.tensor(labels[1:], dtype=torch.long)

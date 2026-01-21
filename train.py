@@ -76,7 +76,7 @@ def sft_train(data_path, block_size, batch_size, vocab_size,
             total_loss += loss.item()
             # writer.add_scalar('Loss/train', loss.item(), batch_idx)
             pbar.set_postfix({'loss': f'{loss.item():.4f}','total_loss': f'{total_loss:.4f}'})
-        if epoch % 10 == 0:
+        if (epoch+1) % 10 == 0:
             torch.save(model.state_dict(), f'ckpt/sft/sft_epoch_{epoch+1}.pth')
         cos_scheduler.step()
         avg_loss = total_loss / len(train_loader)

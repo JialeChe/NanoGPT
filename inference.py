@@ -3,7 +3,7 @@ import tiktoken
 from model.decoder_transformer import decoder_transformer
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model_path = 'ckpt/model_epoch_10.pth'
+model_path = 'ckpt/sft_epoch_91.pth'
 is_quantized = 'quantized' in model_path
 if is_quantized:
     device = 'cpu'
@@ -17,8 +17,8 @@ d_hidden = d_model * 2
 block_size = 256
 
 max_new_tokens = 1024
-temperature = 0.8   
-top_k = 50
+temperature = 0.9
+top_k = 1
 print(f"正在从 {model_path} 加载模型...")
 model = decoder_transformer(vocab_size, d_model, n_layer, n_head, d_hidden)
 if is_quantized:

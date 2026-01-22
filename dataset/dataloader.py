@@ -57,10 +57,10 @@ class sft_dataset(Dataset):
         else:
             text = "指令:" + instruction + "\n输出:"
 
-        full = text + output
+        full = text + output + self.tokenizer.decode([self.eot_token])
 
-        prompt_tokens = self.tokenizer.encode(text)
-        full_tokens = self.tokenizer.encode(full)
+        prompt_tokens = self.tokenizer.encode(text,allowed_special={"<|endoftext|>"})
+        full_tokens = self.tokenizer.encode(full,allowed_special={"<|endoftext|>"})
         labels = [self.pad_id] * len(prompt_tokens) + full_tokens[len(prompt_tokens):]
         if len(full_tokens) < self.max_len + 1:
             pad_length = self.max_len + 1 - len(full_tokens)
@@ -95,7 +95,7 @@ def create_dataloader(data_path, block_size, batch_size, shuffle=True, num_worke
 
 
 if __name__ == '__main__':
-    train_data_path = 'sft_data/sft_1500.json'
+    train_data_path = 'sft_data/sft_l.json'
     
     block_size = 256  
     batch_size = 64   

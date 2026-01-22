@@ -3,7 +3,7 @@ import tiktoken
 from model.decoder_transformer import decoder_transformer
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model_path = 'ckpt/sft_epoch_91.pth'
+model_path = 'ckpt/sft_epoch_100.pth'
 is_quantized = 'quantized' in model_path
 if is_quantized:
     device = 'cpu'

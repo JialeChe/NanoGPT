@@ -42,7 +42,7 @@ class mha(nn.Module):
         attn = q @ k.transpose(-2,-1) / math.sqrt(n_d) # shape: (b,n_head,t,t)
 
         if mask is not None:
-            attn = attn.masked_fill(mask==0,float('-inf')) # mask==0 -> -inf
+            attn = attn.masked_fill(mask==0,-1e9) # mask==0 -> -inf
         
         result = self.softmax(attn)@v
         result = result.transpose(1,2).contiguous().view(b,t,d)
@@ -50,7 +50,7 @@ class mha(nn.Module):
         return result
 
 class rmsnorm(nn.Module):
-    def __init__(self,d_model,eps=1e-5):
+    def __init__(self,d_model,eps=1e-6):
         super(rmsnorm,self).__init__()
         self.gamma =  nn.Parameter(torch.ones(d_model))
         self.eps = eps

@@ -63,8 +63,8 @@ class decoder_transformer(nn.Module):
     
 if __name__ == "__main__":
     model = decoder_transformer(vocab_size=100277,d_model=512,n_layer=8,n_head=8,d_hidden=1024,
-                                dropout=0.1,use_moe=True,n_expert=4,top_k=2,max_seq_len=512).cuda()
-    inputs = torch.randint(0,100277,(64,256)).cuda()
+                                dropout=0.1,use_moe=True,n_expert=4,top_k=2,max_seq_len=256).cuda()
+    inputs = torch.randint(0,100277,(1,256)).cuda()
     logits = model(inputs)
     print(logits.shape)
-    summary(model,(256,),batch_size=2)
+    summary(model,(256,),batch_size=1)

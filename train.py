@@ -8,7 +8,7 @@ import tiktoken
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 import argparse
-
+import math
 
 def train_model(data_path, block_size, batch_size, vocab_size,
                 d_model, n_layer, n_head, d_hidden,
@@ -55,6 +55,13 @@ def sft_train(data_path, block_size, batch_size, vocab_size,
     train_loader, vocab_size = create_dataloader(data_path, block_size, batch_size,sft=True)
     
     model = decoder_transformer(vocab_size, d_model, n_layer, n_head, d_hidden).to(device)
+    pretrained_model_path = 'ckpt/model_epoch_10.pth'
+    if os.path.exists(pretrained_model_path):
+        print(f"Loading pretrained model from {pretrained_model_path}")
+        model.load_state_dict(torch.load(pretrained_model_path), strict=True)
+    else:
+        print(f"Warning: Pretrained model not found at {pretrained_model_path}. Training from scratch.")
+
     criterion = nn.CrossEntropyLoss(ignore_index=-100)
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
     cos_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs)
@@ -70,12 +77,22 @@ def sft_train(data_path, block_size, batch_size, vocab_size,
             optimizer.zero_grad()
             outputs = model(inputs)  # [B,L,vocab_size]
             loss = criterion(outputs.view(-1, vocab_size), targets.view(-1))
+
+            # 检查 loss 是否为 NaN
+            if torch.isnan(loss):
+                print(f"\nWarning: NaN loss detected at epoch {epoch+1}, batch_idx {batch_idx}. Skipping update.")
+                print(f"Input shape: {inputs.shape}")
+                print(f"Input sample: {inputs[0, :20]}") 
+                continue 
+
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             
             total_loss += loss.item()
             # writer.add_scalar('Loss/train', loss.item(), batch_idx)
             pbar.set_postfix({'loss': f'{loss.item():.4f}','total_loss': f'{total_loss:.4f}'})
+
         if (epoch+1) % 10 == 0:
             torch.save(model.state_dict(), f'ckpt/sft/sft_epoch_{epoch+1}.pth')
         cos_scheduler.step()

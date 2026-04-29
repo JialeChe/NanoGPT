@@ -14,7 +14,7 @@ class StoryDataset(Dataset):
 
         with open(data_path, 'r', encoding='utf-8') as f:
             text = f.read()
-        
+
         self.stories = [s.strip() for s in text.split('<|endoftext|>') if s.strip()]
 
     def __len__(self):
@@ -41,7 +41,8 @@ class sft_dataset(Dataset):
         self.eot_token = self.tokenizer.eot_token
         self.pad_id = -100
 
-        self.sft_data = json.load(open(data_path, 'r', encoding='utf-8'))
+        with open(data_path, 'r', encoding='utf-8') as handle:
+            self.sft_data = json.load(handle)
 
     def __len__(self):
         return len(self.sft_data)
@@ -77,7 +78,7 @@ class sft_dataset(Dataset):
                 output_len_to_keep = self.max_len + 1 - len(prompt_tokens)
                 output_tokens = full_tokens[len(prompt_tokens) : len(prompt_tokens) + output_len_to_keep]
                 full_tokens = prompt_tokens + output_tokens
-                labels = [self.pad_id] * len(prompt_len) + output_tokens
+                labels = [self.pad_id] * len(prompt_tokens) + output_tokens
             
         x = torch.tensor(full_tokens[:-1], dtype=torch.long)
         y = torch.tensor(labels[1:], dtype=torch.long)
@@ -89,7 +90,14 @@ def create_dataloader(data_path, block_size, batch_size, shuffle=True, num_worke
         dataset = sft_dataset(data_path, max_len=block_size)
     else:
         dataset = StoryDataset(data_path, block_size)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, pin_memory=pin_memory, drop_last=True)
+    dataloader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+        drop_last=True,
+    )
     return dataloader, dataset.vocab_size
 
 

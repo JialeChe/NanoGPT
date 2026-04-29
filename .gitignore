@@ -6,3 +6,4 @@ ckpt/
 *.ipynb_checkpoints/
 sft_data/
 k_base/
+test/

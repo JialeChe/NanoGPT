@@ -1,0 +1,39 @@
+model:
+	vocab_size: 100277
+	d_model: 512
+	n_layer: 8
+	n_head: 8
+	d_hidden: 1024
+	dropout: 0.1
+	use_moe: true
+	n_expert: 4
+	top_k: 2
+	max_seq_len: 256
+
+data:
+	sft_path: sft_data/sft_2000.json
+	batch_size: 16
+	block_size: 256
+	shuffle: true
+	num_workers: 4
+	pin_memory: true
+
+training:
+	learning_rate: 2.0e-5
+	num_epochs: 100
+	save_every: 10
+	device: null
+
+checkpoint:
+	dir: ckpt
+	pretrained_model_path: null
+
+logging:
+	tensorboard_dir: runs/sft/sft_total_loss
+
+inference:
+	model_path: null
+	device: null
+	max_new_tokens: 1024
+	temperature: 0.9
+	top_k: 1

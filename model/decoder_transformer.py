@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .component import mha,rmsnorm,moe,ffn_swiglu
-from torchsummary import summary
 
 class transformer_block(nn.Module):
     def __init__(self,d_model,n_head,d_hidden,dropout=0.1,use_moe=True,n_expert=4,top_k=2,max_seq_len=512):
@@ -67,4 +66,3 @@ if __name__ == "__main__":
     inputs = torch.randint(0,100277,(1,256)).cuda()
     logits = model(inputs)
     print(logits.shape)
-    summary(model,(256,),batch_size=1)

@@ -1,10 +1,10 @@
 import torch
-from dataset.dataloader import create_dataloader
-from model.decoder_transformer import decoder_transformer
-import torch.optim as optim
-import torch.nn as nn
 import os
 import tiktoken
+import argparse
+
+from checkpoint_utils import extract_state_dict, resolve_model_path
+from config_utils import create_model_from_config, get_block_size, get_default_config_path, load_experiment_config
 
 
 def test_full_training(model, start_string, max_len, device, block_size,tokenizer):
@@ -26,14 +26,27 @@ def test_full_training(model, start_string, max_len, device, block_size,tokenize
     print(generated_text)
 
 if __name__ == "__main__":
-    model = decoder_transformer(vocab_size=100277,d_model=512,n_layer=8,n_head=8,d_hidden=1024,
-                                dropout=0.1,use_moe=True,n_expert=4,top_k=2,max_seq_len=512).cuda()
-    model.load_state_dict(torch.load("ckpt/model_epoch_10.pth"))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", default=None)
+    parser.add_argument("--ckpt-dir", default=None)
+    parser.add_argument("--model-path", default=None)
+    args = parser.parse_args()
+
+    config_path = args.config or get_default_config_path(current_dir, sft=False)
+    config = load_experiment_config(config_path, current_dir)
+    checkpoint_dir = args.ckpt_dir or config["checkpoint"]["dir"]
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model_path = resolve_model_path(args.model_path or config.get("inference", {}).get("model_path"), checkpoint_dir, prefer_sft=False)
+
+    model = create_model_from_config(config).to(device)
+    checkpoint = torch.load(model_path, map_location=device)
+    model.load_state_dict(extract_state_dict(checkpoint))
 
     start_string = "I love Yina Wang.She is a beautiful girl."
     max_len = 512
-    device = "cuda"
-    block_size = 256
+    block_size = get_block_size(config)
     tokenizer = tiktoken.get_encoding("cl100k_base")
 
     test_full_training(model, start_string, max_len, device, block_size,tokenizer)

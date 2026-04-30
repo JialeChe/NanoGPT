@@ -2,8 +2,8 @@ import torch
 import tiktoken
 import argparse
 import os
-from checkpoint_utils import extract_state_dict, resolve_model_path
-from config_utils import create_model_from_config, get_block_size, get_default_config_path, load_experiment_config
+from utils.checkpoint_utils import extract_state_dict, resolve_model_path
+from utils.config_utils import create_model_from_config, get_block_size, get_default_config_path, load_experiment_config
 
 def main():
     current_dir = os.path.dirname(os.path.abspath(__file__))

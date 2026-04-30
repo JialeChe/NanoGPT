@@ -1,13 +1,13 @@
 import torch
 from dataset.dataloader import create_dataloader
-from checkpoint_utils import (
+from utils.checkpoint_utils import (
     PRETRAIN_STAGE,
     SFT_STAGE,
     build_checkpoint_path,
     ensure_checkpoint_dirs,
     find_latest_checkpoint,
 )
-from config_utils import create_model_from_config, get_block_size, get_default_config_path, load_experiment_config
+from utils.config_utils import create_model_from_config, get_block_size, get_default_config_path, load_experiment_config
 import torch.optim as optim
 import torch.nn as nn
 import os

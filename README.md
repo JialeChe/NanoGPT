@@ -49,4 +49,4 @@ JSON 格式，放入 `sft_data/`：
 - [ ] DeepSpeed 分布式训练加速（或纯 PyTorch DDP / FSDP）
 - [ ] KV-Cache 推理优化
 - [ ] 其他 MoE 变体（DeepSeek 共享专家 / 细粒度专家等）
-- [ ] Attention Residuals
+- [ ] Attention Residuals--Kimi
